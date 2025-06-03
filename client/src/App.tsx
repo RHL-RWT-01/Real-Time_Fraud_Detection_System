@@ -1,5 +1,6 @@
 
 import './App.css'
+import './index.css'
 import TransactionForm from './components/Transactions'
 
 function App() {
