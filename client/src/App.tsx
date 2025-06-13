@@ -2,11 +2,14 @@
 import './App.css'
 import './index.css'
 import TransactionForm from './components/Transactions'
+import Navbar from './components/Navbar'
 
 function App() {
 
   return (
     <>
+
+      <Navbar />
 
       <div className="flex justify-center items-center h-screen bg-gray-100">
         <h1 className="text-3xl font-bold text-gray-800">Transaction form </h1>
