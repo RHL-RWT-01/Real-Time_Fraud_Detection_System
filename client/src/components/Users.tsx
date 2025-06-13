@@ -51,3 +51,5 @@ const Users: React.FC = () => {
             </table>
         </div>
     );
+}
+export default Users;
