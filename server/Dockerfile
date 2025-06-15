@@ -1,25 +1,22 @@
-# Use official Python image
+# ✅ Use minimal Python image
 FROM python:3.11-slim
 
-# Set environment variables
+# ✅ Prevent .pyc files and force stdout
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Set working directory
+# ✅ Set workdir inside container
 WORKDIR /app
 
-# Install dependencies
+# ✅ Install dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy project files
+# ✅ Copy your FastAPI app
 COPY ./app ./app
 
-# Set environment variables for Kafka config (can also be from .env at runtime)
-# ENV KAFKA_TOPIC=my-topic-name
-
-# Expose FastAPI port
+# ✅ Expose the FastAPI port
 EXPOSE 8000
 
-# Run the FastAPI app
+# ✅ Start FastAPI, pointing to app.main
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -4,7 +4,9 @@ from .models import Transaction
 from .kafka_producer import send_to_kafka
 from .notification_producer import send_notification  # ✅ NEW
 import os
-
+from threading import Thread
+from .kafka_consumer import start_kafka_consumer
+from .kafka_notification_consumer import start_kafka_notification_consumer  
 app = FastAPI()
 
 # Enable CORS for React
@@ -15,6 +17,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.on_event("startup")
+def start_consumers():
+    Thread(target=start_kafka_consumer, daemon=True).start()
+    Thread(target=start_kafka_notification_consumer, daemon=True).start()
+
 
 @app.get("/")
 def health():
