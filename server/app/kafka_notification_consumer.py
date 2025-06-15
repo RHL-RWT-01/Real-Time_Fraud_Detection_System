@@ -23,8 +23,8 @@ producer_conf = {
 
 consumer = Consumer(consumer_conf)
 producer = Producer(producer_conf)
-
-consumer.subscribe([ALERT_TOPIC])
+topic = os.getenv("NOTIFICATION_TOPIC", "notifications")
+consumer.subscribe([topic])
 
 
 def send_to_notification_topic(notification: dict):
