@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from .models import Transaction
 from .kafka_producer import send_to_kafka
+from .notification_producer import send_notification  # ✅ NEW
 import os
 
 app = FastAPI()
@@ -22,7 +23,18 @@ def health():
 @app.post("/transaction")
 def receive_transaction(data: Transaction):
     try:
+        # Send to transaction topic
         send_to_kafka(os.getenv("KAFKA_TOPIC"), data.dict())
-        return {"message": "Transaction sent to Kafka"}
+
+        # OPTIONAL: Detect suspicious or high-value transactions
+        if data.amount > 10000:  # You can define any logic
+            message = (
+                f"🚨 Suspicious transaction detected:\n"
+                f"Amount: ₹{data.amount}\n"
+                f"Location: {data.location}"
+            )
+            send_notification(user_id=data.user_id, email=f"{data.user_id}@example.com", message=message)
+
+        return {"message": "Transaction and notification processed"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

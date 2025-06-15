@@ -42,35 +42,23 @@ def send_to_notification_topic(notification: dict):
 
 print("📬 Notification consumer started...")
 
-try:
-    while True:
-        msg = consumer.poll(1.0)
-        if msg is None:
-            continue
-        if msg.error():
-            print(f"[ERROR] Kafka error: {msg.error()}")
-            continue
+while True:
+    msg = consumer.poll(1.0)
+    if msg is None:
+        continue
+    if msg.error():
+        print(f"[ERROR] Kafka error: {msg.error()}")
+        continue
 
-        try:
-            alert = json.loads(msg.value().decode("utf-8"))
-            user_id = alert.get("user_id", "Unknown")
-            amount = alert.get("amount")
-            location = alert.get("location")
-            email = alert.get("email") or f"{user_id}@example.com"
+    try:
+        alert = json.loads(msg.value().decode("utf-8"))
+        user_id = alert.get("user_id", "Unknown")
+        message = alert.get("message")
 
-            notification_event = {
-                "user_id": user_id,
-                "email": email,
-                "message": f"⚠️ Fraud alert: ₹{amount} at {location}. If this wasn't you, take action."
-            }
+        print(f"🔔 Notification event sent for user {user_id}: {message}")
 
-            send_to_notification_topic(notification_event)
+        consumer.commit(msg)
 
-        except Exception as e:
-            print(f"[ERROR] Failed to process message: {e}")
+    except Exception as e:
+        print(f"[ERROR] Failed to process message: {e}")
 
-except KeyboardInterrupt:
-    print("Shutting down consumer...")
-
-finally:
-    consumer.close()
